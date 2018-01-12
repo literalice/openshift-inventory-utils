@@ -1,22 +1,42 @@
 package node
 
 import (
+	"strings"
+
 	"github.com/aws/aws-sdk-go/aws"
 	"github.com/aws/aws-sdk-go/aws/session"
 	"github.com/aws/aws-sdk-go/service/ec2"
 )
 
+func (n *Node) importAwsTags(tags []*ec2.Tag) {
+	labels := make(map[string]string)
+	n.Vars["openshift_node_labels"] = labels
+	for _, tag := range tags {
+		if strings.HasPrefix(*tag.Key, "openshift_node_labels_") {
+			labelName := strings.Replace(*tag.Key, "openshift_node_labels_", "", 1)
+			labels[labelName] = *tag.Value
+		} else if strings.HasPrefix(*tag.Key, "openshift_") {
+			n.Vars[*tag.Key] = *tag.Value
+		}
+	}
+}
+
 // List nodes with the specific type from AWS Tag
-func List(clusterName string, role string, roleTag string) (addresses []string, err error) {
-	err = eachAwsNodeInstance(clusterName, role, roleTag, func(i ec2.Instance) {
+func List(clusterName string, role string, roleTag string) (nodes []*Node, err error) {
+	err = eachAwsNodeInstance(clusterName, role, roleTag, func(i *ec2.Instance, tags []*ec2.Tag) {
 		if *i.State.Name == "running" {
-			addresses = append(addresses, *i.PrivateDnsName)
+			node := &Node{
+				Host: *i.PrivateDnsName,
+				Vars: make(map[string]interface{}),
+			}
+			node.importAwsTags(tags)
+			nodes = append(nodes, node)
 		}
 	})
 	return
 }
 
-func eachAwsNodeInstance(clusterName string, role string, roleTag string, f func(ec2.Instance)) error {
+func eachAwsNodeInstance(clusterName string, role string, roleTag string, f func(*ec2.Instance, []*ec2.Tag)) error {
 	svc := ec2.New(session.New())
 	input := &ec2.DescribeInstancesInput{
 		Filters: []*ec2.Filter{
@@ -42,7 +62,7 @@ func eachAwsNodeInstance(clusterName string, role string, roleTag string, f func
 
 	for _, r := range res.Reservations {
 		for _, i := range r.Instances {
-			f(*i)
+			f(i, i.Tags)
 		}
 	}
 

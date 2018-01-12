@@ -4,10 +4,11 @@ import (
 	"io/ioutil"
 
 	"github.com/ghodss/yaml"
+	"github.com/literalice/openshift-inventory-utils/node"
 )
 
 // Generate ansible inventory for openshift
-func Generate(nodes []string, dedicatedMasters []string, dedcatedEtcd []string, inventoryPath string) (string, error) {
+func Generate(nodes []*node.Node, dedicatedMasters []*node.Node, dedcatedEtcd []*node.Node, inventoryPath string) (string, error) {
 	inventory, rErr := readInventory(inventoryPath)
 	if rErr != nil {
 		return "", rErr
@@ -15,7 +16,7 @@ func Generate(nodes []string, dedicatedMasters []string, dedcatedEtcd []string, 
 
 	setInventoryHosts(inventory, "nodes", nodes)
 
-	var masters []string
+	var masters []*node.Node
 	if len(dedicatedMasters) > 0 {
 		masters = dedicatedMasters
 	} else {
@@ -23,7 +24,7 @@ func Generate(nodes []string, dedicatedMasters []string, dedcatedEtcd []string, 
 	}
 	setInventoryHosts(inventory, "masters", masters)
 
-	var etcd []string
+	var etcd []*node.Node
 	if len(dedcatedEtcd) > 0 {
 		etcd = dedcatedEtcd
 	} else {
@@ -50,14 +51,18 @@ func readInventory(path string) (inventory map[string]interface{}, err error) {
 	return
 }
 
-func setInventoryHosts(inventory map[string]interface{}, nodeType string, hosts []string) {
-	hostValue := make(map[string]interface{})
-	for _, host := range hosts {
-		hostValue[host] = true
+func setInventoryHosts(inventory map[string]interface{}, nodeType string, nodes []*node.Node) {
+	nodeValue := make(map[string]interface{})
+	for _, node := range nodes {
+		if nodeType == "nodes" && len(node.Vars) > 0 {
+			nodeValue[node.Host] = node.Vars
+		} else {
+			nodeValue[node.Host] = ""
+		}
 	}
 
 	ose := inventory["OSEv3"].(map[string]interface{})
 	children := ose["children"].(map[string]interface{})
 	nodeInfo := children[nodeType].(map[string]interface{})
-	nodeInfo["hosts"] = hostValue
+	nodeInfo["hosts"] = nodeValue
 }
