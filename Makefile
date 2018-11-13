@@ -15,4 +15,4 @@ build: deps
 	mkdir -p $(CURDIR)/.bin
 	$(GOBUILD) -o $(CURDIR)/.bin/$(BINARY_NAME) -v ./cmd/ocinventory
 docker-build:
-	docker run --rm -v "$(CURDIR)":$(DOCKER_WORK_DIR) -w $(DOCKER_WORK_DIR) golang:1.9.2 make build BINARY_NAME=$(BINARY_UNIX)
+	docker run --rm -v "$(CURDIR)":$(DOCKER_WORK_DIR) -w $(DOCKER_WORK_DIR) golang:1.11.2 make build BINARY_NAME=$(BINARY_UNIX)
