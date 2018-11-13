@@ -9,13 +9,8 @@ import (
 )
 
 func (n *Node) importAwsTags(tags []*ec2.Tag) {
-	labels := make(map[string]string)
-	n.Vars["openshift_node_labels"] = labels
 	for _, tag := range tags {
-		if strings.HasPrefix(*tag.Key, "openshift_node_labels_") {
-			labelName := strings.Replace(*tag.Key, "openshift_node_labels_", "", 1)
-			labels[labelName] = *tag.Value
-		} else if strings.HasPrefix(*tag.Key, "openshift_") {
+		if strings.HasPrefix(*tag.Key, "openshift_") {
 			n.Vars[*tag.Key] = *tag.Value
 		}
 	}
