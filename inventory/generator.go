@@ -3,8 +3,8 @@ package inventory
 import (
 	"io/ioutil"
 
-	"github.com/ghodss/yaml"
 	"github.com/literalice/openshift-inventory-utils/node"
+	"gopkg.in/yaml.v2"
 )
 
 // Generate ansible inventory for openshift
@@ -61,8 +61,8 @@ func setInventoryHosts(inventory map[string]interface{}, nodeType string, nodes 
 		}
 	}
 
-	ose := inventory["OSEv3"].(map[string]interface{})
-	children := ose["children"].(map[string]interface{})
-	nodeInfo := children[nodeType].(map[string]interface{})
+	ose := inventory["OSEv3"].(map[interface{}]interface{})
+	children := ose["children"].(map[interface{}]interface{})
+	nodeInfo := children[nodeType].(map[interface{}]interface{})
 	nodeInfo["hosts"] = nodeValue
 }

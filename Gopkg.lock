@@ -2,6 +2,7 @@
 
 
 [[projects]]
+  digest = "1:e69bc90687a4ed4fa20ac5ba79163719952bfc833fe5e38fd86435119ae3bfd2"
   name = "github.com/aws/aws-sdk-go"
   packages = [
     "aws",
@@ -14,12 +15,17 @@
     "aws/credentials/ec2rolecreds",
     "aws/credentials/endpointcreds",
     "aws/credentials/stscreds",
+    "aws/csm",
     "aws/defaults",
     "aws/ec2metadata",
     "aws/endpoints",
     "aws/request",
     "aws/session",
     "aws/signer/v4",
+    "internal/ini",
+    "internal/sdkio",
+    "internal/sdkrand",
+    "internal/sdkuri",
     "internal/shareddefaults",
     "private/protocol",
     "private/protocol/ec2query",
@@ -28,37 +34,35 @@
     "private/protocol/rest",
     "private/protocol/xml/xmlutil",
     "service/ec2",
-    "service/sts"
+    "service/sts",
   ]
-  revision = "3c754f1d340244540350f0a00b940781bae9c905"
-  version = "v1.12.59"
+  pruneopts = ""
+  revision = "47607acdb3657d60debbfa33f328dc9801fb3cfd"
+  version = "v1.15.74"
 
 [[projects]]
-  name = "github.com/ghodss/yaml"
-  packages = ["."]
-  revision = "0ca9ea5df5451ffdf184b4428c902747c2c11cd7"
-  version = "v1.0.0"
-
-[[projects]]
-  name = "github.com/go-ini/ini"
-  packages = ["."]
-  revision = "32e4c1e6bc4e7d0d8451aa6b75200d19e37a536a"
-  version = "v1.32.0"
-
-[[projects]]
+  digest = "1:6f49eae0c1e5dab1dafafee34b207aeb7a42303105960944828c2079b92fc88e"
   name = "github.com/jmespath/go-jmespath"
   packages = ["."]
+  pruneopts = ""
   revision = "0b12d6b5"
 
 [[projects]]
   branch = "v2"
+  digest = "1:f0620375dd1f6251d9973b5f2596228cc8042e887cd7f827e4220bc1ce8c30e2"
   name = "gopkg.in/yaml.v2"
   packages = ["."]
-  revision = "c4a9fb418357aceb801272d73efd518f183700fa"
+  pruneopts = ""
+  revision = "5420a8b6744d3b0345ab293f6fcba19c978f1183"
 
 [solve-meta]
   analyzer-name = "dep"
   analyzer-version = 1
-  inputs-digest = "5ac982692ded0b2282cc81b12d824efd6d3fd0bc9bd34678e77e393bc77a17ff"
+  input-imports = [
+    "github.com/aws/aws-sdk-go/aws",
+    "github.com/aws/aws-sdk-go/aws/session",
+    "github.com/aws/aws-sdk-go/service/ec2",
+    "gopkg.in/yaml.v2",
+  ]
   solver-name = "gps-cdcl"
   solver-version = 1
