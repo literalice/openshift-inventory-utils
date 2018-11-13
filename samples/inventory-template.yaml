@@ -1,0 +1,76 @@
+OSEv3:
+  children:
+    masters:
+      hosts:
+    etcd:
+      hosts:
+    nodes:
+      hosts:
+  vars:
+    timeout: 60
+    ansible_user: ec2-user
+    ansible_ssh_user: ec2-user
+    ansible_become: true
+    openshift_deployment_type: openshift-enterprise
+    openshift_release: "3.11"
+    openshift_repos_enable_testing: false
+    openshift_master_identity_providers:
+      - name: 'test_identity_provider'
+        login: true
+        challenge: true
+        kind: 'AllowAllPasswordIdentityProvider'
+    os_sdn_network_plugin_name: 'redhat/openshift-ovs-networkpolicy'
+    openshift_disable_check: 'disk_availability,memory_availability,docker_image_availability'
+    openshift_master_cluster_hostname: master.p1.internal
+    openshift_master_cluster_public_hostname: p.example.com
+    openshift_master_default_subdomain: p.example.com
+    openshift_master_bootstrap_auto_approve: true
+    openshift_cloudprovider_kind: aws
+    openshift_clusterid: p1
+    openshift_logging_install_logging: true
+    openshift_logging_es_pvc_dynamic: true
+    openshift_logging_es_memory_limit: 1024M
+    openshift_logging_es_nodeselector:
+      node-role.kubernetes.io/infra: "true"
+    openshift_node_kubelet_args:
+      eviction-hard:
+      - memory.available<4%
+      - nodefs.available<4%
+      - nodefs.inodesFree<4%
+      - imagefs.available<4%
+      - imagefs.inodesFree<4%
+      eviction-soft:
+      - memory.available<8%
+      - nodefs.available<8%
+      - nodefs.inodesFree<8%
+      - imagefs.available<8%
+      - imagefs.inodesFree<8%
+      eviction-soft-grace-period:
+      - memory.available=1m30s
+      - nodefs.available=1m30s
+      - nodefs.inodesFree=1m30s
+      - imagefs.available=1m30s
+      - imagefs.inodesFree=1m30s
+      kube-reserved:
+      - cpu=100m,memory=100Mi
+      system-reserved:
+      - cpu=100m,memory=100Mi
+    openshift_certificate_expiry_warning_days: 30
+    openshift_master_admission_plugin_config: '{ "MutatingAdmissionWebhook": { "configuration": { "apiVersion": "apiserver.config.k8s.io/v1alpha1", "kubeConfigFile": "/etc/origin/master/admin.kubeconfig", "kind": "WebhookAdmission" } }, "ValidatingAdmissionWebhook": { "configuration": { "apiVersion": "apiserver.config.k8s.io/v1alpha1", "kubeConfigFile": "/etc/origin/master/admin.kubeconfig", "kind": "WebhookAdmission" } } }'
+    oreg_auth_user: "test@example.com"
+    oreg_auth_password: "xxxx"
+    openshift_additional_registry_credentials:
+    - host: registry.connect.redhat.com
+      user: "xxx@example.com"
+      password: "xxxx"
+      test_image: mongodb/enterprise-operator:0.3.2
+    openshift_master_overwrite_named_certificates: true
+    openshift_master_named_certificates:
+    - certfile: '/home/ec2-user/platform_cert.pem'
+      keyfile: '/home/ec2-user/platform_cert.key'
+      cafile: '/home/ec2-user/platform_intermediate.pem'
+      names: ['p.example.com']
+    openshift_hosted_router_certificate:
+      certfile: '/home/ec2-user/platform_cert.pem'
+      keyfile: '/home/ec2-user/platform_cert.key'
+      cafile: '/home/ec2-user/platform_intermediate.pem'
